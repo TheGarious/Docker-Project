@@ -1,0 +1,55 @@
+server {
+    
+    listen 80;
+    
+    server_name ${PROJECT};
+    root /home/dev/projects/${PROJECT}/web;
+    
+    location / {
+        try_files $uri @rewriteapp;
+    }
+
+    location @rewriteapp {
+        rewrite ^(.*)$ /app.php/$1 last;
+    }
+    
+    location ~ ^/(app|swab_debug|config)\.php(/|$) {
+        fastcgi_pass php-upstream;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+
+    error_log /var/log/nginx/${PROJECT}.error.log;
+    access_log /var/log/nginx/${PROJECT}.access.log;
+}
+server {
+    
+    listen 443 ssl;
+    ssl on;
+    ssl_certificate     /etc/nginx/nginx.crt;
+    ssl_certificate_key /etc/nginx/nginx.key;
+    
+    server_name ${PROJECT};
+    root /home/dev/projects/${PROJECT}/web;
+    
+    location / {
+        try_files $uri @rewriteapp;
+    }
+
+    location @rewriteapp {
+        rewrite ^(.*)$ /app.php/$1 last;
+    }
+    
+    location ~ ^/(app|swab_debug|config)\.php(/|$) {
+        fastcgi_pass php-upstream;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+
+    error_log /var/log/nginx/${PROJECT}.error.log;
+    access_log /var/log/nginx/${PROJECT}.access.log;
+}
