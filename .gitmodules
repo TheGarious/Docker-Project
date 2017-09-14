@@ -1,3 +1,0 @@
-[submodule "projects/local.projectName.com"]
-	path = projects/local.projectName.com
-	url = git@github.com:
